@@ -1,80 +1,56 @@
-const startBtn = document.getElementById("startBtn");
+const speakBtn = document.getElementById("speakBtn");
 const translatedOutput = document.getElementById("translatedOutput");
 
-let recognition;
+speakBtn.addEventListener("click", async () => {
 
-if ('webkitSpeechRecognition' in window) {
+    const text = document.getElementById("inputText").value;
+    const speechKey = document.getElementById("speechKey").value;
+    const speechRegion = document.getElementById("speechRegion").value;
+    const voiceName = document.getElementById("voiceName").value;
 
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-} else {
-    alert("Speech Recognition not supported in this browser.");
-}
-
-startBtn.addEventListener("click", () => {
-
-    speechOutput.innerHTML = "Listening...";
-    translatedOutput.innerHTML = "Waiting for translation...";
-
-    recognition.start();
-});
-
-stopBtn.addEventListener("click", () => {
-    recognition.stop();
-});
-
-recognition.onresult = async (event) => {
-
-    let transcript = "";
-
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-    }
-
-    speechOutput.innerHTML = transcript;
-
-    await translateText(transcript);
-};
-
-async function translateText(text) {
-
-    const translatorKey = document.getElementById("translatorKey").value;
-    const translatorRegion = document.getElementById("translatorRegion").value;
-    const targetLanguage = document.getElementById("targetLanguage").value;
-
-    if (!translatorKey || !translatorRegion) {
-        translatedOutput.innerHTML = "Please enter Translator credentials.";
+    if (!text || !speechKey || !speechRegion) {
+        alert("Please fill all required fields.");
         return;
     }
 
-    const endpoint = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=" + targetLanguage;
+    translatedOutput.innerHTML = "Generating speech...";
+
+    const endpoint = `https://${speechRegion}.tts.speech.microsoft.com/cognitiveservices/v1`;
+
+    const ssml = `
+    <speak version='1.0' xml:lang='en-US'>
+        <voice xml:lang='en-US' name='${voiceName}'>
+            ${text}
+        </voice>
+    </speak>`;
 
     try {
 
         const response = await fetch(endpoint, {
             method: "POST",
             headers: {
-                "Ocp-Apim-Subscription-Key": translatorKey,
-                "Ocp-Apim-Subscription-Region": translatorRegion,
-                "Content-Type": "application/json"
+                "Ocp-Apim-Subscription-Key": speechKey,
+                "Content-Type": "application/ssml+xml",
+                "X-Microsoft-OutputFormat": "audio-16khz-32kbitrate-mono-mp3"
             },
-            body: JSON.stringify([
-                {
-                    Text: text
-                }
-            ])
+            body: ssml
         });
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error("Speech synthesis failed");
+        }
 
-        translatedOutput.innerHTML = data[0].translations[0].text;
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        const audio = new Audio(audioUrl);
+        audio.play();
+
+        translatedOutput.innerHTML = "Speech generated successfully.";
 
     } catch (error) {
 
         console.error(error);
-        translatedOutput.innerHTML = "Translation failed.";
+        translatedOutput.innerHTML = "Failed to generate speech.";
     }
-}
+});
