@@ -3,59 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azure Speech Translator</title>
+    <title>Azure Text To Speech</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>Azure Speech + Translator</h1>
-        <p class="subtitle">
-            Speech Recognition + Language Translation using Azure AI Services
-        </p>
+    <h1>Azure Text To Speech</h1>
+    <p class="subtitle">
+        Convert Text into AI Voice using Azure Speech Services
+    </p>
 
-        <div class="card">
+    <div class="card">
 
-            <h2>Azure Configuration</h2>
+        <h2>Azure Configuration</h2>
 
-            <div class="input-group">
-                <label>Speech API Key</label>
-                <input type="password" id="speechKey" placeholder="Enter Speech API Key">
-            </div>
+        <div class="input-group">
+            <label>Speech API Key</label>
+            <input type="password" id="speechKey" placeholder="Enter Azure Speech Key">
+        </div>
 
-            <div class="input-group">
-                <label>Speech Region</label>
-                <input type="text" id="speechRegion" placeholder="Example: eastus">
-            </div>
+        <div class="input-group">
+            <label>Speech Region</label>
+            <input type="text" id="speechRegion" placeholder="Example: centralindia">
+        </div>
 
-            <div class="input-group">
-                <label>Translator API Key</label>
-                <input type="password" id="translatorKey" placeholder="Enter Translator API Key">
-            </div>
+        <div class="input-group">
+            <label>Enter Text</label>
+            <textarea id="inputText" placeholder="Type something..."></textarea>
+        </div>
 
-            <div class="input-group">
-                <label>Translator Region</label>
-                <input type="text" id="translatorRegion" placeholder="Example: centralindia">
-            </div>
+        <div class="input-group">
+            <label>Select Voice</label>
 
-            <div class="input-group">
-                <label>Target Language</label>
-                <select id="targetLanguage">
-                    <option value="hi">Hindi</option>
-                    <option value="fr">French</option>
-                    <option value="es">Spanish</option>
-                    <option value="de">German</option>
-                    <option value="ja">Japanese</option>
-                    <option value="ko">Korean</option>
-                    <option value="ru">Russian</option>
-                    <option value="ar">Arabic</option>
-                </select>
-            </div>
+            <select id="voiceName">
+                <option value="en-US-JennyNeural">
+                    Jenny (Female US)
+                </option>
 
-            <div class="button-group">
-                <button id="startBtn">🎤 Start Listening</button>
-                <button id="stopBtn">⏹ Stop</button>
-            </div>
+                <option value="en-US-GuyNeural">
+                    Guy (Male US)
+                </option>
 
+                <option value="en-IN-NeerjaNeural">
+                    Neerja (Indian Female)
+                </option>
+
+                <option value="en-IN-PrabhatNeural">
+                    Prabhat (Indian Male)
+                </option>
+            </select>
+        </div>
+
+        <button id="speakBtn">
+            🔊 Convert To Speech
+        </button>
+
+    </div>
+
+    <div class="card">
+        <h2>Status</h2>
+
+        <div id="translatedOutput" class="output-box">
+            Waiting...
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
 </html>
